@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>🍰 四年级·运算甜品师 | 输入答案</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(145deg, #fef7ed 0%, #fff3e4 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, sans-serif;
+      padding: 16px;
+      margin: 0;
+    }
+
+    .game-container {
+      max-width: 1200px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 48px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06), 0 6px 12px rgba(252, 180, 120, 0.15);
+      padding: 24px 22px 32px;
+      border: 1px solid #fff1e0;
+    }
+
+    h1 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 650;
+      font-size: clamp(26px, 6vw, 38px);
+      color: #9e5e3c;
+      padding-left: 12px;
+      margin-bottom: 18px;
+    }
+
+    h1 span {
+      background: #ffdbbb;
+      padding: 6px 20px;
+      border-radius: 60px;
+      font-size: 0.7em;
+      color: #623b26;
+      font-weight: 500;
+    }
+
+    .split-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 24px;
+    }
+
+    /* ---------- 左侧知识点 (四年级) ---------- */
+    .knowledge-card {
+      background: #fffcf6;
+      border-radius: 36px;
+      padding: 24px 18px;
+      box-shadow: inset 0 1px 4px #fffaf2, 0 12px 18px -8px rgba(170, 110, 70, 0.1);
+      border: 1px solid #ffe6d2;
+    }
+
+    .knowledge-card h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 28px;
+      font-weight: 650;
+      color: #b06e48;
+      margin-bottom: 20px;
+    }
+
+    .rule-list {
+      list-style: none;
+    }
+
+    .rule-item {
+      background: #ffffffd9;
+      margin-bottom: 18px;
+      padding: 16px 18px;
+      border-radius: 24px;
+      box-shadow: 0 4px 8px #f0daca;
+      border-left: 12px solid #fdb27a;
+    }
+
+    .rule-item strong {
+      font-size: 22px;
+      color: #b35822;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .rule-item p {
+      font-size: 17px;
+      color: #4f3827;
+      line-height: 1.5;
+    }
+
+    .example-box {
+      background: #feedde;
+      border-radius: 24px;
+      padding: 18px 16px;
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 16px;
+    }
+
+    .example {
+      background: white;
+      border-radius: 40px;
+      padding: 8px 20px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #7b4a2c;
+      box-shadow: 0 2px 6px #e6cbb6;
+    }
+
+    .tip-note {
+      margin-top: 20px;
+      background: #ffe0c4;
+      border-radius: 24px;
+      padding: 14px 18px;
+      font-size: 18px;
+      color: #4f311f;
+    }
+
+    /* ---------- 右侧游戏区 (输入答案) ---------- */
+    .game-area {
+      background: #fffcf5;
+      border-radius: 40px;
+      padding: 24px 22px;
+      box-shadow: inset 0 1px 6px #fff3e8, 0 12px 20px -10px #eacbb6;
+      border: 1px solid #ffe1c6;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .game-header h3 {
+      font-size: 28px;
+      color: #a56640;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-box {
+      background: #ffdbbc;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 26px;
+      color: #613e28;
+      box-shadow: inset 0 1px 3px #ffe5cf, 0 4px 6px #ebcfb6;
+    }
+
+    /* 题目卡片 */
+    .question-panel {
+      background: #ffefe1;
+      border-radius: 36px;
+      padding: 30px 20px;
+      margin-bottom: 24px;
+      border: 2px dashed #fcb27b;
+      text-align: center;
+    }
+
+    .big-equation {
+      font-size: 52px;
+      font-weight: 750;
+      color: #5e3a23;
+      letter-spacing: 2px;
+      word-break: break-word;
+      line-height: 1.3;
+    }
+
+    .hint-message {
+      font-size: 20px;
+      margin-top: 16px;
+      color: #9f5f39;
+      font-weight: 500;
+    }
+
+    /* 输入区域 */
+    .input-area {
+      background: #fff3e9;
+      border-radius: 48px;
+      padding: 24px 22px;
+      margin: 10px 0 20px;
+      box-shadow: inset 0 2px 8px #f2d8c2, 0 6px 0 #c68e68;
+      border: 1px solid #ffbe8c;
+    }
+
+    .input-label {
+      font-size: 22px;
+      color: #744b31;
+      margin-bottom: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .answer-input-wrapper {
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 60px;
+      padding: 6px 6px 6px 24px;
+      box-shadow: inset 0 2px 6px #e5cfbc, 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .answer-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 42px;
+      font-weight: 700;
+      padding: 12px 6px;
+      background: transparent;
+      color: #4a2c1c;
+      text-align: center;
+      font-family: inherit;
+      min-width: 0;
+    }
+
+    .answer-input::placeholder {
+      color: #d4b59f;
+      font-size: 28px;
+      font-weight: 400;
+    }
+
+    .input-emoji {
+      font-size: 48px;
+      padding: 0 12px;
+    }
+
+    /* 按钮组 */
+    .action-buttons {
+      display: flex;
+      justify-content: space-around;
+      margin: 16px 0 8px;
+      gap: 15px;
+    }
+
+    .btn {
+      background: #ffcfaa;
+      border: none;
+      border-bottom: 5px solid #b26e42;
+      font-size: 26px;
+      font-weight: bold;
+      color: #462d1d;
+      padding: 18px 20px;
+      border-radius: 60px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px #dbb294;
+      transition: all 0.08s;
+      flex: 1;
+      text-align: center;
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 4px #d6a882;
+      border-bottom-width: 2px;
+    }
+
+    .btn.reset-btn {
+      background: #e7cfb5;
+      border-bottom-color: #8f6a50;
+      color: #3d2c1e;
+    }
+
+    .feedback {
+      min-height: 55px;
+      font-size: 24px;
+      text-align: center;
+      margin: 18px 0 6px;
+      color: #b15e2a;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 装饰小元素 */
+    .dessert-decoration {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 12px;
+      font-size: 32px;
+      opacity: 0.7;
+    }
+
+    /* 响应式 */
+    @media (max-width: 800px) {
+      .split-layout {
+        grid-template-columns: 1fr;
+        gap: 26px;
+      }
+      body { padding: 8px; }
+      .game-container { padding: 16px 12px; }
+      .big-equation { font-size: 42px; }
+      .answer-input { font-size: 36px; }
+      .btn { font-size: 22px; padding: 16px 12px; }
+    }
+
+    @media (max-width: 480px) {
+      .big-equation { font-size: 36px; }
+      .rule-item p { font-size: 16px; }
+      .answer-input { font-size: 32px; }
+    }
+
+    /* 移除数字输入上下箭头 */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+<body>
+<div class="game-container">
+  <h1>
+    🧁 运算甜品师 · 四年级
+    <span>混合运算·输入答案</span>
+  </h1>
+  <div class="split-layout">
+    <!-- 左侧知识点 (保持不变) -->
+    <div class="knowledge-card">
+      <h2>
+        <span>📚</span> 四则混合运算
+      </h2>
+      <ul class="rule-list">
+        <li class="rule-item">
+          <strong>🥇 运算顺序</strong>
+          <p>先乘除，后加减；有括号的先算括号里面的。</p>
+        </li>
+        <li class="rule-item">
+          <strong>🧮 括号的作用</strong>
+          <p>小括号 ( ) 可以改变运算顺序。<br>例：(5+3)×2 = 16</p>
+        </li>
+        <li class="rule-item">
+          <strong>✖️➗ 乘除法</strong>
+          <p>多位数乘除，细心计算。<br>如 125×8 = 1000， 144÷12 = 12</p>
+        </li>
+        <li class="rule-item">
+          <strong>➕➖ 大数加减</strong>
+          <p>相同数位对齐，进位退位别忘记。</p>
+        </li>
+      </ul>
+      <div class="example-box">
+        <span class="example">(26+14)×3=120</span>
+        <span class="example">240÷6+15=55</span>
+        <span class="example">72÷(8+1)=8</span>
+        <span class="example">125×8-300=700</span>
+      </div>
+      <div class="tip-note">
+        💡 小提示：在右边输入你的答案，点击“检查”得分！
+      </div>
+    </div>
+
+    <!-- 右侧游戏：输入答案 -->
+    <div class="game-area">
+      <div class="game-header">
+        <h3><span>🍬</span> 甜品答题</h3>
+        <div class="score-box">🏆 <span id="scoreDisplay">0</span> 分</div>
+      </div>
+
+      <div class="question-panel">
+        <div class="big-equation" id="questionText">(45 + 27) ÷ 8 = ?</div>
+        <div class="hint-message" id="hintMsg">✏️ 在下面输入你的答案</div>
+      </div>
+
+      <!-- 输入区 -->
+      <div class="input-area">
+        <div class="input-label">
+          <span>🍰 你的答案</span>
+        </div>
+        <div class="answer-input-wrapper">
+          <input type="number" id="answerInput" class="answer-input" placeholder="?" value="" inputmode="numeric">
+          <span class="input-emoji">🧁</span>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn" id="checkAnswerBtn">✅ 检查</button>
+        <button class="btn reset-btn" id="newQuestionBtn">🔄 下一题</button>
+      </div>
+      <div class="feedback" id="feedbackMsg">✨ 输入数字，点击检查～</div>
+      
+      <!-- 甜品装饰 -->
+      <div class="dessert-decoration">
+        <span>🍪</span><span>🍩</span><span>🍰</span><span>🥧</span><span>🍦</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- 四年级题库 (混合运算、带括号、多位数) ----------
+    const questionPool = [
+      { text: '(45 + 27) ÷ 8 = ?', answer: 9 },
+      { text: '125 × 8 - 300 = ?', answer: 700 },
+      { text: '240 ÷ 6 + 15 = ?', answer: 55 },
+      { text: '72 ÷ (8 + 1) = ?', answer: 8 },
+      { text: '(26 + 14) × 3 = ?', answer: 120 },
+      { text: '560 ÷ 7 + 23 = ?', answer: 103 },
+      { text: '1000 - 125 × 4 = ?', answer: 500 },
+      { text: '18 × (12 - 7) = ?', answer: 90 },
+      { text: '144 ÷ 12 + 88 = ?', answer: 100 },
+      { text: '(300 - 75) ÷ 5 = ?', answer: 45 },
+      { text: '25 × 4 + 36 ÷ 6 = ?', answer: 106 },
+      { text: '81 ÷ 9 × 7 = ?', answer: 63 },
+      { text: '420 ÷ (15 - 8) = ?', answer: 60 },
+      { text: '37 + 63 × 2 = ?', answer: 163 },
+      { text: '(90 - 18) ÷ 9 = ?', answer: 8 },
+      { text: '150 + 250 ÷ 5 = ?', answer: 200 },
+      { text: '(64 + 36) ÷ 20 = ?', answer: 5 }
+    ];
+
+    // 状态
+    let currentQuestion = { text: '(45 + 27) ÷ 8 = ?', answer: 9 };
+    let score = 0;
+    
+    // DOM 元素
+    const questionEl = document.getElementById('questionText');
+    const hintMsgEl = document.getElementById('hintMsg');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const answerInput = document.getElementById('answerInput');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const checkBtn = document.getElementById('checkAnswerBtn');
+    const newBtn = document.getElementById('newQuestionBtn');
+
+    // 更新积分显示
+    function updateScoreUI() {
+      scoreDisplay.textContent = score;
+    }
+
+    // 随机选题
+    function pickRandomQuestion() {
+      const randomIndex = Math.floor(Math.random() * questionPool.length);
+      return { ...questionPool[randomIndex] };
+    }
+
+    // 设置新题目
+    function setNewQuestion() {
+      currentQuestion = pickRandomQuestion();
+      questionEl.textContent = currentQuestion.text;
+      hintMsgEl.textContent = '✏️ 输入答案，点击“检查”';
+      answerInput.value = '';
+      feedbackMsg.textContent = '🍬 新题目来啦！试试看～';
+      // 让输入框获得焦点（移动端友好）
+      answerInput.focus();
+    }
+
+    // 检查答案
+    function checkAnswer() {
+      const inputVal = answerInput.value.trim();
+      if (inputVal === '') {
+        feedbackMsg.textContent = '🍭 输入一个数字答案吧！';
+        answerInput.focus();
+        return;
+      }
+      
+      const userAnswer = Number(inputVal);
+      if (isNaN(userAnswer)) {
+        feedbackMsg.textContent = '❓ 请输入有效的数字哟';
+        return;
+      }
+      
+      // 比较（整数比较）
+      if (userAnswer === currentQuestion.answer) {
+        // 答对了！
+        score += 10;
+        updateScoreUI();
+        feedbackMsg.innerHTML = '🎉 完全正确！ +10分！ 太棒啦！ 🎉';
+        // 答对后自动跳转新题 (延迟一点，让小朋友看到鼓励)
+        setTimeout(() => {
+          setNewQuestion();
+        }, 1000);
+      } else {
+        feedbackMsg.textContent = `😲 答案是 ${userAnswer} ，再算一遍吧～ 加油！`;
+        answerInput.select();
+      }
+    }
+
+    // 处理下一题（手动）
+    function handleNewQuestion() {
+      setNewQuestion();
+    }
+
+    // 允许回车键提交
+    answerInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        checkAnswer();
+      }
+    });
+
+    // 初始化
+    function initGame() {
+      // 设置第一题
+      currentQuestion = questionPool[0];
+      questionEl.textContent = currentQuestion.text;
+      score = 0;
+      updateScoreUI();
+      answerInput.value = '';
+      feedbackMsg.textContent = '✨ 输入数字，点击检查～';
+      
+      checkBtn.addEventListener('click', checkAnswer);
+      newBtn.addEventListener('click', handleNewQuestion);
+      
+      // 移动端友好：点击输入框时确保不遮挡
+    }
+
+    initGame();
+
+    // 额外小优化：限制输入长度防止溢出
+    answerInput.addEventListener('input', function() {
+      if (this.value.length > 8) {
+        this.value = this.value.slice(0, 8);
+      }
+    });
+
+  })();
+</script>
+</body>
+</html>

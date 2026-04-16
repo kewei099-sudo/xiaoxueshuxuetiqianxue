@@ -14,6 +14,7 @@ interface LearningViewProps {
 export default function LearningView({ learnedIds, toggleLearned, onNavigate }: LearningViewProps) {
   const [search, setSearch] = useState('');
   const [selectedKp, setSelectedKp] = useState<KnowledgePoint | null>(null);
+  const [isIframeLoading, setIsIframeLoading] = useState(false);
   const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set([CATEGORIES[0].name]));
   const [expandedSubCats, setExpandedSubCats] = useState<Set<string>>(new Set());
 
@@ -64,6 +65,12 @@ export default function LearningView({ learnedIds, toggleLearned, onNavigate }: 
     link.click();
     document.body.removeChild(link);
   };
+
+  React.useEffect(() => {
+    if (selectedKp) {
+      setIsIframeLoading(true);
+    }
+  }, [selectedKp?.id]);
 
   return (
     <motion.div 
@@ -210,15 +217,21 @@ export default function LearningView({ learnedIds, toggleLearned, onNavigate }: 
                 src={`./knowledge/${selectedKp.name}.html`}
                 className="w-full h-full border-none"
                 title={selectedKp.name}
-                onError={(e) => console.log('Iframe load error', e)}
+                onLoad={() => setIsIframeLoading(false)}
+                onError={(e) => {
+                  console.log('Iframe load error', e);
+                  setIsIframeLoading(false);
+                }}
               />
               {/* Fallback overlay for missing files in demo */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-                <div className="text-center">
-                  <Icons.BookOpen className="w-20 h-20 mx-auto mb-4 text-primary" />
-                  <p className="text-text-muted font-bold">正在加载知识点详情...</p>
+              {isIframeLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-bg-natural z-20">
+                  <div className="text-center">
+                    <Icons.BookOpen className="w-20 h-20 mx-auto mb-4 text-primary animate-pulse" />
+                    <p className="text-text-muted font-bold">正在加载知识点详情...</p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         ) : (
