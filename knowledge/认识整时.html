@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认识整时</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #e0f2f1 0%, #ffffff 100%);
+            border-radius: 24px;
+            margin-bottom: 30px;
+        }
+        h1 { color: #009688; margin: 0; font-size: 28px; }
+        .clock-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+        }
+        .clock {
+            width: 200px;
+            height: 200px;
+            border: 8px solid #333;
+            border-radius: 50%;
+            position: relative;
+        }
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom;
+            background: #333;
+            border-radius: 4px;
+        }
+        .hour-hand { width: 6px; height: 50px; transform: translateX(-50%) rotate(90deg); }
+        .minute-hand { width: 4px; height: 80px; transform: translateX(-50%) rotate(0deg); }
+        .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: #ff5722;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>认识整时</h1>
+        <p>滴答滴答，现在是几点钟？</p>
+    </div>
+    <div class="content">
+        <p>当分针指向 <strong>12</strong> 时，时针指向几，就是几时。</p>
+        
+        <div class="clock-container">
+            <div class="clock">
+                <!-- 3 o'clock example -->
+                <div class="hand hour-hand"></div>
+                <div class="hand minute-hand"></div>
+                <div class="center-dot"></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; font-size: 24px; font-weight: bold; color: #009688;">
+            现在是：3 时 (3:00)
+        </div>
+
+        <h3>口诀：</h3>
+        <p style="font-style: italic; color: #666; text-align: center;">
+            “分针长，时针短，分针指向12，时针指几就几时。”
+        </p>
+    </div>
+</body>
+</html>

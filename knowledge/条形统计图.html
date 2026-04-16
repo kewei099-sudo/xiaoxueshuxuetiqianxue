@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>条形统计图</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #f3e5f5 0%, #ffffff 100%);
+            border-radius: 24px;
+            margin-bottom: 30px;
+        }
+        h1 { color: #9c27b0; margin: 0; font-size: 28px; }
+        .chart-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            height: 200px;
+            padding: 20px;
+            border-left: 2px solid #333;
+            border-bottom: 2px solid #333;
+            margin: 40px 0;
+        }
+        .bar {
+            flex: 1;
+            background: #9c27b0;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: height 0.5s;
+        }
+        .bar::after {
+            content: attr(data-label);
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .bar::before {
+            content: attr(data-value);
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>条形统计图</h1>
+        <p>用长短不一的直条，一眼看出数据的多少！</p>
+    </div>
+    <div class="content">
+        <p>条形统计图是用一个单位长度表示一定的数量，根据数量的多少画成长短不同的直条，然后把这些直条按照一定的顺序排列起来。</p>
+        
+        <div class="chart-container">
+            <div class="bar" style="height: 80%" data-label="苹果" data-value="8个"></div>
+            <div class="bar" style="height: 50%" data-label="香蕉" data-value="5个"></div>
+            <div class="bar" style="height: 100%" data-label="西瓜" data-value="10个"></div>
+            <div class="bar" style="height: 30%" data-label="梨" data-value="3个"></div>
+        </div>
+
+        <h3>条形统计图的优点：</h3>
+        <ul>
+            <li>能够直观地反映出数据的多少。</li>
+            <li>便于比较各项数据之间的差异。</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>三角形面积大冒险 - 拼接动画 + 钓鱼游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* 避免拖拽时选中文字，游戏区拖拽不影响 */
+        }
+
+        body {
+            background: linear-gradient(145deg, #f7f9fe 0%, #eef2f7 100%);
+            font-family: 'Segoe UI', 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', 'Poppins', system-ui, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-container {
+            max-width: 1400px;
+            width: 100%;
+            background: #ffffffdd;
+            backdrop-filter: blur(2px);
+            border-radius: 64px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .split-layout {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .knowledge-box {
+            flex: 1.3;
+            min-width: 280px;
+            background: #fffef7;
+            padding: 24px 22px;
+            border-radius: 48px;
+            margin: 20px 10px 20px 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02);
+            border: 1px solid #ffe6c7;
+        }
+
+        .game-box {
+            flex: 1.7;
+            min-width: 290px;
+            background: #ffffffea;
+            border-radius: 48px;
+            margin: 20px 20px 20px 10px;
+            padding: 20px 20px 25px;
+            box-shadow: 0 15px 30px rgba(100, 70, 40, 0.1);
+            border: 1px solid #ffefdb;
+        }
+
+        .animation-card {
+            background: #fef5e8;
+            border-radius: 40px;
+            padding: 16px;
+            margin: 16px 0 20px;
+            text-align: center;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.03);
+        }
+        .animation-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #d97917;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .canvas-area {
+            background: #fff9ef;
+            border-radius: 36px;
+            padding: 15px 10px;
+            margin: 5px 0;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: #FFF9EF;
+            border-radius: 28px;
+            width: 100%;
+            height: auto;
+            max-width: 360px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .animation-control {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .anim-btn {
+            background: #ffcd94;
+            border: none;
+            font-size: 0.85rem;
+            padding: 6px 14px;
+            border-radius: 32px;
+            font-weight: bold;
+            color: #764d1e;
+            cursor: pointer;
+            transition: 0.1s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .anim-btn:active {
+            transform: scale(0.96);
+        }
+        .explain-text {
+            font-size: 0.85rem;
+            margin-top: 10px;
+            color: #b16224;
+            background: #fff0e0;
+            padding: 8px;
+            border-radius: 28px;
+            line-height: 1.4;
+        }
+
+        .formula-card {
+            background: #fef2e0;
+            border-radius: 40px;
+            padding: 14px 12px;
+            text-align: center;
+            margin: 12px 0;
+            border-left: 8px solid #ff9f3d;
+        }
+        .formula {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #c25b00;
+            background: #fff0dd;
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 60px;
+            white-space: nowrap;
+            letter-spacing: 1px;
+        }
+        @media (max-width: 500px) {
+            .formula {
+                font-size: 1.2rem;
+                padding: 4px 12px;
+                white-space: nowrap;
+            }
+        }
+        .example {
+            background: #fff3e0;
+            border-radius: 28px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            border-bottom: 3px dashed #ffd9a5;
+            padding-bottom: 12px;
+        }
+        .game-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff9a3c, #ffc371);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .score-area {
+            background: #ffefcf;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #bc6f1a;
+        }
+        .fishing-area {
+            background: #b7e0ff30;
+            border-radius: 55px;
+            padding: 20px 12px;
+            margin: 15px 0;
+        }
+        .question-pool {
+            background: #fff0d4;
+            border-radius: 48px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .current-question {
+            font-size: 1.4rem;
+            font-weight: bold;
+            background: white;
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 60px;
+            color: #b45f1b;
+        }
+        .fish-bucket {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            margin: 25px 0 15px;
+        }
+        .fish-card {
+            background: #ffe0b5;
+            width: 105px;
+            padding: 12px 4px;
+            border-radius: 60px 60px 40px 40px;
+            text-align: center;
+            cursor: grab;
+            transition: 0.1s;
+            box-shadow: 0 12px 12px -8px rgba(0,0,0,0.2);
+            border: 2px solid #ffc285;
+        }
+        .fish-card:active { cursor: grabbing; }
+        .fish-card.dragging { opacity: 0.5; }
+        .fish-emoji { font-size: 2.2rem; }
+        .fish-value { font-size: 1.1rem; font-weight: bold; background: white; display: inline-block; padding: 2px 12px; border-radius: 30px; margin-top: 6px; color: #c16200; }
+        .drop-zone {
+            background: #e7dbbc;
+            border-radius: 70px;
+            padding: 18px 12px;
+            text-align: center;
+            border: 3px dashed #ffad60;
+            transition: 0.2s;
+            margin-top: 5px;
+        }
+        .drop-zone.active-drop { background: #ffe6b3; border-color: #ff8833; box-shadow: 0 0 0 3px #ffb86b; }
+        .answer-area { background: #fffaec; border-radius: 50px; padding: 12px; margin: 15px 0 0; min-height: 70px; }
+        .feedback { font-weight: bold; font-size: 1rem; text-align: center; }
+        .btn-next {
+            background: #ffb347;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 40px;
+            color: white;
+            margin-top: 12px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 0 #a45f1a;
+        }
+        .btn-next:active { transform: translateY(2px); box-shadow: 0 2px 0 #a45f1a; }
+        .reset-btn { background: #ffd966; color: #7a4900; box-shadow: 0 4px 0 #c28b3e; }
+
+        /* 连续正确鼓励弹窗样式 (轻提示) */
+        .congrats-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+        .congrats-card {
+            background: #fff6e8;
+            border-radius: 60px;
+            padding: 28px 32px;
+            text-align: center;
+            max-width: 320px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.2);
+            border: 3px solid #ffb347;
+            transform: scale(0.9);
+            transition: transform 0.2s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+        .congrats-card h3 {
+            font-size: 1.8rem;
+            color: #ff8c42;
+            margin-bottom: 12px;
+        }
+        .congrats-card p {
+            font-size: 1.2rem;
+            color: #5a3e2b;
+            margin-bottom: 20px;
+        }
+        .congrats-card button {
+            background: #ffb347;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+        }
+        @media (max-width: 780px) {
+            .split-layout { flex-direction: column; }
+            .knowledge-box, .game-box { margin: 12px; }
+            .fish-card { width: 90px; }
+            .current-question { font-size: 1.2rem; }
+        }
+        button { font-family: inherit; }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="split-layout">
+        <!-- 左侧：知识点 + 正确拼接动画（两个三角形同时出现，移动拼接，最后标注底和高） -->
+        <div class="knowledge-box">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span style="background:#ffb347; padding:4px 16px; border-radius:40px; color:white; font-weight:bold;">📐 三角形面积 · 小课堂</span>
+            </div>
+            <div class="animation-card">
+                <div class="animation-title">
+                    🧩 公式怎么来的？ <span style="font-size:0.8rem;">(两个三角形拼成平行四边形)</span>
+                </div>
+                <div class="canvas-area">
+                    <canvas id="triangleCanvas" width="360" height="200" style="width:100%; height:auto; max-width:360px; aspect-ratio:360/200"></canvas>
+                </div>
+                <div class="animation-control">
+                    <button class="anim-btn" id="playAnimBtn">▶ 播放动画</button>
+                    <button class="anim-btn" id="resetAnimBtn">🔄 重置</button>
+                </div>
+                <div class="explain-text" id="animExplain">
+                    💡 两个完全一样的三角形可以拼成一个平行四边形！<br>
+                    平行四边形面积 = 底 × 高，所以三角形面积 = 底×高÷2
+                </div>
+            </div>
+            <div class="formula-card">
+                <div class="formula">面积 = 底 × 高 ÷ 2</div>
+                <div style="margin-top: 8px; font-size:0.85rem;">✨ 底和高要互相垂直 ✨</div>
+            </div>
+            <div class="example">
+                📏 <strong>举个栗子</strong>：底=6cm，高=4cm → 面积=6×4÷2=12cm²<br>
+                🎯 右边钓鱼游戏：把正确的面积小鱼拖进桶里！
+            </div>
+        </div>
+
+        <!-- 右侧游戏区（拖拽钓鱼） - 无额外答案提示板块 -->
+        <div class="game-box">
+            <div class="game-header">
+                <span class="game-title">🎣 钓鱼面积乐 · 拖拽大挑战</span>
+                <span class="score-area">🏆 得分: <span id="scoreValue">0</span> 分</span>
+            </div>
+            <div class="fishing-area">
+                <div class="question-pool">
+                    <div style="font-size:0.9rem; color:#b97f34;">🐟 当前鱼塘题目</div>
+                    <div class="current-question" id="questionDisplay">底? cm, 高? cm</div>
+                    <div style="font-size:0.75rem;">👇 把正确的面积小鱼拖到钓鱼桶中</div>
+                </div>
+                <div id="fishContainer" class="fish-bucket"></div>
+                <div class="drop-zone" id="dropZone">
+                    <div style="font-size:1.2rem;">🧺 钓鱼桶 (拖拽到这里)</div>
+                    <div style="font-size:0.7rem;">将正确面积的小鱼放进来~</div>
+                </div>
+                <div class="answer-area" id="feedbackArea">
+                    <div class="feedback" id="feedbackMsg">✨ 拖拽小鱼到桶里，计算面积！</div>
+                </div>
+                <button class="btn-next" id="nextQuestionBtn">🎣 下一题 / 刷新鱼塘</button>
+                <button class="btn-next reset-btn" id="resetGameBtn">🔄 重置分数</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 连续正确鼓励弹窗 -->
+<div id="congratsOverlay" class="congrats-overlay">
+    <div class="congrats-card">
+        <h3>🎉 太棒啦！ 🎉</h3>
+        <p>成功掌握这个知识点，<br>请前往下一个！</p>
+        <button id="closeCongratsBtn">继续挑战 🌟</button>
+    </div>
+</div>
+
+<script>
+    // -------------------- 动画部分：两个三角形同时出现，第二个移动拼成平行四边形，最后标注底和高（完美拼接效果）--------------------
+    const canvas = document.getElementById('triangleCanvas');
+    const ctx = canvas.getContext('2d');
+    let animProgress = 0;      // 0 -> 1 (0=两个三角形分开，1=完全拼成平行四边形并显示标注)
+    let animFrameId = null;
+    
+    // 固定画布尺寸 360x200
+    function drawAnimation(progress) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const w = canvas.width, h = canvas.height;
+        
+        // 定义三角形底边长度和高
+        const baseLen = 140;
+        const triHeight = 90;
+        // 放置位置 (让图形居中)
+        const startX = (w - baseLen * 1.8) / 2 + 5;
+        const groundY = h - 28;
+        const topY = groundY - triHeight;
+        
+        // 左边三角形 (橙色，固定)
+        const leftTri = [
+            { x: startX, y: groundY },
+            { x: startX + baseLen, y: groundY },
+            { x: startX + baseLen / 2, y: topY }
+        ];
+        
+        // 右边三角形需要移动: 初始偏移大，最终偏移0拼接到左边
+        const offsetInitial = baseLen + 25;
+        const offsetFinal = 0;
+        let currentOffset = offsetInitial * (1 - progress);
+        
+        const rightTri = [
+            { x: startX + baseLen + currentOffset, y: groundY },
+            { x: startX + baseLen*2 + currentOffset, y: groundY },
+            { x: startX + baseLen*1.5 + currentOffset, y: topY }
+        ];
+        
+        // 绘制左边三角形 (橙色)
+        ctx.beginPath();
+        ctx.moveTo(leftTri[0].x, leftTri[0].y);
+        ctx.lineTo(leftTri[1].x, leftTri[1].y);
+        ctx.lineTo(leftTri[2].x, leftTri[2].y);
+        ctx.closePath();
+        ctx.fillStyle = '#FFB347CC';
+        ctx.fill();
+        ctx.strokeStyle = '#c25b00';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // 绘制右边三角形 (蓝色)
+        ctx.beginPath();
+        ctx.moveTo(rightTri[0].x, rightTri[0].y);
+        ctx.lineTo(rightTri[1].x, rightTri[1].y);
+        ctx.lineTo(rightTri[2].x, rightTri[2].y);
+        ctx.closePath();
+        ctx.fillStyle = '#6c9effCC';
+        ctx.fill();
+        ctx.stroke();
+        
+        // 当拼接接近完成时 (progress > 0.6)，绘制平行四边形的完整轮廓，让小朋友清楚看到拼接效果
+        if (progress > 0.6) {
+            ctx.beginPath();
+            ctx.setLineDash([6, 8]);
+            ctx.strokeStyle = '#d9660e';
+            ctx.lineWidth = 2.5;
+            // 平行四边形四个顶点: 左下,右下,右上,左上
+            const p1 = { x: startX, y: groundY };
+            const p2 = { x: startX + baseLen*2, y: groundY };
+            const p3 = { x: startX + baseLen*1.5, y: topY };
+            const p4 = { x: startX + baseLen/2, y: topY };
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.lineTo(p3.x, p3.y);
+            ctx.lineTo(p4.x, p4.y);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 在平行四边形内部添加标注文字（当progress>0.75时显示）
+            if (progress > 0.75) {
+                ctx.font = 'bold 10px "Segoe UI"';
+                ctx.fillStyle = '#b45a1a';
+                ctx.fillText('平行四边形', p1.x + baseLen - 20, groundY - 25);
+            }
+        }
+        
+        // 显示底和高标注 (progress > 0.7 后淡入)
+        let labelOpacity = 0;
+        if (progress > 0.7) {
+            labelOpacity = Math.min(1, (progress - 0.7) / 0.3);
+            ctx.save();
+            ctx.globalAlpha = labelOpacity;
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(startX, groundY);
+            ctx.lineTo(startX + baseLen, groundY);
+            ctx.strokeStyle = '#aa7a3c';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = '#b45f2b';
+            ctx.font = 'bold 12px "Segoe UI"';
+            ctx.fillText('底', startX + baseLen/2 - 6, groundY - 5);
+            
+            ctx.beginPath();
+            ctx.moveTo(startX + baseLen/2, groundY);
+            ctx.lineTo(startX + baseLen/2, topY);
+            ctx.stroke();
+            ctx.fillText('高', startX + baseLen/2 + 5, topY + 12);
+            ctx.setLineDash([]);
+            
+            // 最终提示公式
+            if (progress > 0.9) {
+                ctx.font = 'bold 9px "Segoe UI"';
+                ctx.fillStyle = '#e67e22';
+                ctx.fillText('面积 = 底 × 高', startX + baseLen/2 - 35, groundY - 45);
+            }
+            ctx.restore();
+        }
+        
+        // 动态说明文字
+        if (progress < 0.2) {
+            ctx.font = 'bold 11px "Segoe UI"';
+            ctx.fillStyle = '#b45a1a';
+            ctx.fillText('🔺 两个完全一样的三角形', w/2-85, 22);
+        } else if (progress > 0.85) {
+            ctx.font = 'bold 11px "Segoe UI"';
+            ctx.fillStyle = '#2d6a4f';
+            ctx.fillText('✨ 拼成平行四边形！面积 = 底 × 高', w/2-95, 22);
+        } else if (progress > 0.5) {
+            ctx.font = 'bold 10px "Segoe UI"';
+            ctx.fillStyle = '#bd7a2e';
+            ctx.fillText('➡️ 移动拼接... 拼成一个平行四边形', w/2-75, 22);
+        } else {
+            ctx.font = '10px "Segoe UI"';
+            ctx.fillStyle = '#bd7a2e';
+            ctx.fillText('➡️ 另一个三角形移过来，拼成平行四边形', w/2-85, 22);
+        }
+    }
+
+    function startAnimation() {
+        if (animFrameId) cancelAnimationFrame(animFrameId);
+        const startProgress = animProgress;
+        const endProgress = 1;
+        const duration = 1100;
+        const startTime = performance.now();
+        function step(now) {
+            const elapsed = now - startTime;
+            let t = Math.min(1, elapsed / duration);
+            animProgress = startProgress + (endProgress - startProgress) * t;
+            drawAnimation(animProgress);
+            if (t < 1) {
+                animFrameId = requestAnimationFrame(step);
+            } else {
+                animProgress = 1;
+                drawAnimation(1);
+                animFrameId = null;
+                document.getElementById('animExplain').innerHTML = '🎉 完美拼接！两个三角形拼成一个平行四边形 → 平行四边形面积 = 底 × 高，所以三角形面积 = 底×高÷2 🎉';
+            }
+        }
+        animFrameId = requestAnimationFrame(step);
+    }
+
+    function resetAnimation() {
+        if (animFrameId) cancelAnimationFrame(animFrameId);
+        animProgress = 0;
+        drawAnimation(0);
+        document.getElementById('animExplain').innerHTML = '💡 两个完全一样的三角形可以拼成一个平行四边形！<br>平行四边形面积 = 底 × 高，所以三角形面积 = 底×高÷2';
+    }
+
+    // -------------------- 钓鱼游戏逻辑 (新增连续正确计数及鼓励弹窗) --------------------
+    const questionBank = [
+        { base: 4, height: 3, area: 6, displayText: "底 = 4 cm, 高 = 3 cm" },
+        { base: 5, height: 4, area: 10, displayText: "底 = 5 cm, 高 = 4 cm" },
+        { base: 6, height: 5, area: 15, displayText: "底 = 6 cm, 高 = 5 cm" },
+        { base: 8, height: 3, area: 12, displayText: "底 = 8 cm, 高 = 3 cm" },
+        { base: 7, height: 6, area: 21, displayText: "底 = 7 cm, 高 = 6 cm" },
+        { base: 10, height: 4, area: 20, displayText: "底 = 10 cm, 高 = 4 cm" },
+        { base: 9, height: 2, area: 9, displayText: "底 = 9 cm, 高 = 2 cm" },
+        { base: 12, height: 5, area: 30, displayText: "底 = 12 cm, 高 = 5 cm" }
+    ];
+
+    let currentQuestionIndex = 0;
+    let currentQuestion = null;
+    let currentCorrectArea = 0;
+    let score = 0;
+    let allowDrop = true;
+    let usedFishIndexes = new Set();
+    let currentFishElements = new Map();
+    
+    // 连续正确计数器 (每次正确+1，重置分数或答错归零)
+    let consecutiveCorrect = 0;
+
+    const scoreSpan = document.getElementById('scoreValue');
+    const questionDisplayDiv = document.getElementById('questionDisplay');
+    const fishContainer = document.getElementById('fishContainer');
+    const dropZoneElem = document.getElementById('dropZone');
+    const feedbackMsgDiv = document.getElementById('feedbackMsg');
+    const nextBtn = document.getElementById('nextQuestionBtn');
+    const resetBtn = document.getElementById('resetGameBtn');
+    
+    // 弹窗元素
+    const congratsOverlay = document.getElementById('congratsOverlay');
+    const closeCongratsBtn = document.getElementById('closeCongratsBtn');
+
+    function showCongrats() {
+        congratsOverlay.style.visibility = 'visible';
+        congratsOverlay.style.opacity = '1';
+        // 弹窗卡片微动画
+        const card = document.querySelector('.congrats-card');
+        card.style.transform = 'scale(1)';
+    }
+
+    function hideCongrats() {
+        congratsOverlay.style.visibility = 'hidden';
+        congratsOverlay.style.opacity = '0';
+        const card = document.querySelector('.congrats-card');
+        card.style.transform = 'scale(0.9)';
+    }
+
+    // 当连续正确达到5次时触发鼓励
+    function checkConsecutiveMilestone() {
+        if (consecutiveCorrect === 5) {
+            showCongrats();
+            // 达到里程碑后重置连续计数，避免重复弹窗，但保留总分和进度继续游戏
+            consecutiveCorrect = 0;
+            // 可选：加一个小彩蛋，但不影响后续游戏
+        }
+    }
+
+    function updateScoreUI() { scoreSpan.innerText = score; }
+    function setFeedback(msg, isError = false) {
+        feedbackMsgDiv.innerHTML = msg;
+        feedbackMsgDiv.style.color = isError ? '#d9534f' : '#2a7f3e';
+        setTimeout(() => { if(feedbackMsgDiv.innerHTML === msg) feedbackMsgDiv.style.color = '#5a3e2b'; }, 1500);
+    }
+
+    function generateDistractors(correctArea, count = 3) {
+        let dists = new Set([correctArea]);
+        let candidates = [];
+        for (let i = 0; i < 30; i++) {
+            let offset = Math.floor(Math.random() * 15) - 7;
+            let cand = correctArea + offset;
+            if (cand <= 0) cand = correctArea + 2;
+            if (cand !== correctArea && cand > 0 && !dists.has(cand)) {
+                dists.add(cand);
+                candidates.push(cand);
+                if (candidates.length >= count) break;
+            }
+        }
+        while (candidates.length < count) {
+            let extra = correctArea + candidates.length + 2;
+            if (!dists.has(extra) && extra > 0) candidates.push(extra);
+        }
+        return candidates.slice(0, count);
+    }
+
+    const fishEmojis = ['🐟', '🐠', '🐡', '🎏', '🐋', '🐙'];
+    function getRandomEmoji() { return fishEmojis[Math.floor(Math.random() * fishEmojis.length)]; }
+
+    function renderFish() {
+        fishContainer.innerHTML = '';
+        currentFishElements.clear();
+        usedFishIndexes.clear();
+        const correctVal = currentCorrectArea;
+        const distractors = generateDistractors(correctVal, 3);
+        let options = [correctVal, ...distractors];
+        for (let i = options.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        options.forEach((val, idx) => {
+            const fishCard = document.createElement('div');
+            fishCard.className = 'fish-card';
+            fishCard.setAttribute('draggable', 'true');
+            fishCard.setAttribute('data-fish-value', val);
+            fishCard.setAttribute('data-index', idx);
+            fishCard.innerHTML = `<div class="fish-emoji">${getRandomEmoji()}</div><div class="fish-value">${val} cm²</div><div style="font-size:0.65rem;">🐟 拖拽我</div>`;
+            fishCard.addEventListener('dragstart', handleDragStart);
+            fishCard.addEventListener('dragend', handleDragEnd);
+            fishContainer.appendChild(fishCard);
+            currentFishElements.set(idx, fishCard);
+        });
+        dropZoneElem.classList.remove('active-drop');
+    }
+
+    let dragSourceElement = null, dragValue = null, dragIndex = null;
+    function handleDragStart(e) {
+        if (!allowDrop) { e.preventDefault(); return false; }
+        const target = e.target.closest('.fish-card');
+        if (!target) return;
+        const idx = parseInt(target.getAttribute('data-index'));
+        if (usedFishIndexes.has(idx)) { e.preventDefault(); setFeedback("这条鱼已经钓过啦！下一题刷新鱼塘", true); return false; }
+        dragSourceElement = target;
+        dragValue = parseFloat(target.getAttribute('data-fish-value'));
+        dragIndex = idx;
+        e.dataTransfer.setData('text/plain', dragValue);
+        e.dataTransfer.effectAllowed = 'copy';
+        target.classList.add('dragging');
+    }
+    function handleDragEnd(e) { if (dragSourceElement) dragSourceElement.classList.remove('dragging'); dropZoneElem.classList.remove('active-drop'); dragSourceElement = null; dragValue = null; dragIndex = null; }
+
+    dropZoneElem.addEventListener('dragenter', (e) => { e.preventDefault(); if(allowDrop) dropZoneElem.classList.add('active-drop'); });
+    dropZoneElem.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; if(allowDrop) dropZoneElem.classList.add('active-drop'); });
+    dropZoneElem.addEventListener('dragleave', () => { dropZoneElem.classList.remove('active-drop'); });
+    dropZoneElem.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZoneElem.classList.remove('active-drop');
+        if (!allowDrop) { setFeedback("请点击下一题继续挑战～", true); return; }
+        if (dragIndex === undefined || dragSourceElement === null) { setFeedback("抓住小鱼拖过来吧！", true); return; }
+        if (usedFishIndexes.has(dragIndex)) { setFeedback("这条鱼已经贡献过分数啦！", true); return; }
+        const selectedVal = dragValue;
+        if (selectedVal === currentCorrectArea) {
+            // 正确加分，连续正确增加
+            score++;
+            consecutiveCorrect++;
+            updateScoreUI();
+            usedFishIndexes.add(dragIndex);
+            const fishDom = currentFishElements.get(dragIndex);
+            if (fishDom && fishDom.parentNode) fishDom.remove();
+            currentFishElements.delete(dragIndex);
+            setFeedback(`🎉 正确！面积 = ${currentCorrectArea} cm²！ +1分 🎉`, false);
+            
+            // 检查是否达到连续正确5次
+            checkConsecutiveMilestone();
+            
+            let correctRemaining = false;
+            for (let [idx, card] of currentFishElements.entries()) {
+                if (parseFloat(card.getAttribute('data-fish-value')) === currentCorrectArea && !usedFishIndexes.has(idx)) correctRemaining = true;
+            }
+            if (!correctRemaining) { 
+                setFeedback(`🏆 完美完成本题！点击“下一题”继续闯关`, false); 
+                allowDrop = false; 
+            }
+        } else {
+            // 答错：连续正确计数归零
+            consecutiveCorrect = 0;
+            setFeedback(`❌ ${selectedVal} cm² 不对哦！再算一遍: 底×高÷2 = ${currentQuestion.base}×${currentQuestion.height}÷2 = ${currentCorrectArea} cm²`, true);
+            if(dragSourceElement) dragSourceElement.style.transform = 'scale(0.95)'; setTimeout(()=>{if(dragSourceElement) dragSourceElement.style.transform = '';},200);
+        }
+        dragSourceElement = null; dragValue = null; dragIndex = null;
+    });
+
+    function loadQuestion(index) {
+        if (index >= questionBank.length) currentQuestionIndex = 0;
+        currentQuestion = questionBank[currentQuestionIndex % questionBank.length];
+        currentCorrectArea = currentQuestion.area;
+        questionDisplayDiv.innerHTML = `📏 ${currentQuestion.displayText}<br> 📐 面积 = ? cm²`;
+        allowDrop = true;
+        usedFishIndexes.clear();
+        renderFish();
+        // 简洁反馈，不提示正确答案数值
+        setFeedback(`🐟 把正确的面积小鱼拖进桶里！`, false);
+    }
+
+    function nextQuestion() { 
+        currentQuestionIndex++; 
+        if(currentQuestionIndex>=questionBank.length) currentQuestionIndex=0; 
+        loadQuestion(currentQuestionIndex); 
+    }
+    
+    function resetGame() { 
+        score = 0; 
+        consecutiveCorrect = 0;
+        updateScoreUI(); 
+        currentQuestionIndex = 0; 
+        loadQuestion(0); 
+        setFeedback("✨ 分数重置，重新挑战吧 ✨", false); 
+        allowDrop = true; 
+        hideCongrats(); // 重置时关闭弹窗
+    }
+
+    function init() {
+        loadQuestion(0);
+        nextBtn.addEventListener('click', nextQuestion);
+        resetBtn.addEventListener('click', resetGame);
+        resetAnimation();
+        document.getElementById('playAnimBtn').addEventListener('click', () => { startAnimation(); });
+        document.getElementById('resetAnimBtn').addEventListener('click', () => { resetAnimation(); });
+        window.addEventListener('dragstart', (e) => { if(!e.target.closest('.fish-card')) e.preventDefault(); });
+        drawAnimation(0);
+        
+        // 弹窗关闭事件
+        closeCongratsBtn.addEventListener('click', hideCongrats);
+        congratsOverlay.addEventListener('click', (e) => {
+            if(e.target === congratsOverlay) hideCongrats();
+        });
+    }
+    init();
+</script>
+</body>
+</html>

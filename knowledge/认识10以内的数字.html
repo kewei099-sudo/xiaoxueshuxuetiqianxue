@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认识10以内的数字</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+            border-radius: 24px;
+            margin-bottom: 30px;
+        }
+        h1 { color: #4caf50; margin: 0; font-size: 28px; }
+        .content { padding: 0 10px; }
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .number-card {
+            background: #f9f9f9;
+            border: 2px solid #e8f5e9;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .number-card:hover { transform: translateY(-5px); border-color: #4caf50; }
+        .num { font-size: 40px; font-weight: bold; color: #4caf50; display: block; }
+        .word { font-size: 16px; color: #666; }
+        .tip {
+            background: #fff3e0;
+            padding: 15px;
+            border-left: 5px solid #ff9800;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>认识10以内的数字</h1>
+        <p>数学世界的基石，从这里开始！</p>
+    </div>
+    <div class="content">
+        <p>在我们的生活中，到处都有数字。让我们一起来认识 0 到 9 这十个基础数字吧。</p>
+        
+        <div class="number-grid">
+            <div class="number-card"><span class="num">0</span><span class="word">零</span></div>
+            <div class="number-card"><span class="num">1</span><span class="word">一</span></div>
+            <div class="number-card"><span class="num">2</span><span class="word">二</span></div>
+            <div class="number-card"><span class="num">3</span><span class="word">三</span></div>
+            <div class="number-card"><span class="num">4</span><span class="word">四</span></div>
+            <div class="number-card"><span class="num">5</span><span class="word">五</span></div>
+            <div class="number-card"><span class="num">6</span><span class="word">六</span></div>
+            <div class="number-card"><span class="num">7</span><span class="word">七</span></div>
+            <div class="number-card"><span class="num">8</span><span class="word">八</span></div>
+            <div class="number-card"><span class="num">9</span><span class="word">九</span></div>
+        </div>
+
+        <div class="tip">
+            <strong>小贴士：</strong> 0 不仅仅表示“没有”，它在计数和占位中也非常重要哦！
+        </div>
+
+        <h3>练习一下：</h3>
+        <ul>
+            <li>数一数你的手指头，有几个？</li>
+            <li>找找看，你家里哪些地方有数字？</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=ZCOOL+KuaiLe&display=swap');
+
+@theme {
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "ZCOOL KuaiLe", cursive;
+  
+  --color-primary: #4caf50;
+  --color-primary-light: #e8f5e9;
+  --color-secondary: #2196f3;
+  --color-secondary-light: #e3f2fd;
+  --color-accent: #ff9800;
+  --color-bg-natural: #fdfdfb;
+  --color-text-main: #333;
+  --color-text-muted: #757575;
+  
+  --shadow-card: 0 8px 24px rgba(76, 175, 80, 0.08);
+  --shadow-button: 0 10px 30px rgba(76, 175, 80, 0.3);
+}
+
+@layer base {
+  body {
+    @apply bg-bg-natural text-text-main antialiased;
+  }
+}
+
+@layer components {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-200 rounded-full hover:bg-gray-300 transition-colors;
+  }
+}
